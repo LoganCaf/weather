@@ -1,0 +1,11 @@
+# Local artifacts
+weather_data.sqlite
+*.sqlite
+logs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
