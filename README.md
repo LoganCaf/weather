@@ -1,10 +1,18 @@
 # WeatherGrab
 
-Hourly scraper that pairs The Weather Channel hourly forecast data with the
-current observed temperature for Denver, Colorado. Each run writes a new entry
-to a local SQLite database so you can evaluate forecast accuracy over time or
-build ML training sets from prediction-only features. Review weather.com’s
-Terms of Service before automating requests.
+Python data-ingestion tool that pairs The Weather Channel's hourly forecast with the current observed temperature and stores each snapshot in SQLite. The accumulated records support forecast-error analysis and time-series model experiments.
+
+## Project Status
+
+This is a historical project. Weather.com replaced the embedded application-state format used by the parser, so live collection currently requires a parser update. The repository remains available as an example of the original ingestion and SQLite persistence workflow, but it is not one of my actively maintained portfolio projects.
+
+## Data Workflow
+
+- Retrieves hourly forecasts and current observations from embedded page data.
+- Selects the forecast horizon closest to the configured target.
+- Stores retrieval timestamps, forecast timestamps, temperatures, and raw snapshots.
+- Supports configurable locations, units, language, user agent, and database path.
+- Uses SQLite for append-only local collection and later analysis.
 
 ## Prerequisites
 
@@ -28,10 +36,7 @@ Configuration can also be supplied via environment variables:
 - `WEATHER_DB_PATH`
 - `TWC_USER_AGENT`
 
-To discover another location id, open your target city on weather.com and copy
-the identifier from the page URL (the segment after `/l/`). The script scrapes
-the public HTML and extracts the embedded JSON state; no paid API key is
-required.
+To discover another location ID, open the target city on weather.com and copy the identifier from the page URL segment after `/l/`. The script extracts the embedded JSON state; no paid API key is required.
 
 Each execution appends a record to the `weather_hourly` table containing:
 
@@ -48,6 +53,4 @@ Run hourly with cron:
 0 * * * * /usr/bin/env bash -lc 'cd /path/to/WeatherGrab && source venv/bin/activate && python weather_logger.py >> logs/weather.log 2>&1'
 ```
 
-Adjust the path to your project, virtual environment activation, and logging
-preferences as needed. Consider randomizing the schedule slightly to avoid
-predictable scraping intervals.
+Adjust the project path, virtual-environment activation, and logging destination as needed. Review the data provider's terms before scheduling automated collection.
